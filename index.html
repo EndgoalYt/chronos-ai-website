@@ -25,6 +25,8 @@
       <a href="#features">Features</a>
       <a href="#how-it-works">How it works</a>
       <a href="#requirements">Requirements</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#account">Account</a>
       <a class="nav-download" href="#download">Download</a>
     </nav>
   </header>
@@ -73,7 +75,7 @@
         </article>
         <article class="feature-card">
           <div class="feature-symbol symbol-purple">⌁</div><div class="feature-tag">02 / LOCAL AI</div>
-          <h3>Your own setup.</h3><p>Run compatible local models on supported hardware, with offline chat when the model and required files are available locally.</p>
+          <h3>Your own setup.</h3><p>Run compatible local models on supported hardware. Offline AI mode and local model management are planned for Ultimate only.</p>
           <div class="feature-footer"><span class="tiny-dot"></span> Local capability depends on model and device</div>
         </article>
         <article class="feature-card">
@@ -97,6 +99,168 @@
           <div class="step"><span class="step-number">03</span><div><h3>Make it yours</h3><p>Start a conversation, organize your chats, and explore supported tools.</p></div></div>
         </div>
       </div>
+    </section>
+
+    <section class="section-wrap section-block pricing-section" id="pricing" aria-labelledby="pricing-title">
+      <div class="section-heading">
+        <div><div class="eyebrow">EDITIONS, AT A GLANCE</div><h2 id="pricing-title">Choose your way<br><span class="gradient-text">to think beyond.</span></h2></div>
+        <p>Choose an edition and market to see whether secure one-time checkout is configured. Product features are planned scopes and become available only as they are completed and released.</p>
+      </div>
+
+      <div class="pricing-notice" role="note">
+        <span class="pricing-notice-icon" aria-hidden="true">◷</span>
+        <p><strong>Lifetime purchases, not subscriptions.</strong> Checkout is enabled only for markets configured with a verified Paystack currency and price. Sign in below to check your edition, restore a purchase, or continue to checkout.</p>
+      </div>
+
+      <div class="edition-grid">
+        <article class="edition-card">
+          <div class="edition-topline"><span class="edition-name">FREE</span><span class="edition-kicker">A thoughtful starting point</span></div>
+          <p class="edition-price"><strong>$0</strong><span>always free</span></p>
+          <p class="edition-description">The essentials for starting conversations and making Chronos yours.</p>
+          <ul class="edition-features">
+            <li>Basic AI chat</li>
+            <li>Basic conversation history</li>
+            <li>Basic settings</li>
+            <li>Basic themes and limited online AI features</li>
+            <li>Available free features</li>
+          </ul>
+          <a class="button button-quiet edition-action" href="#download">Check download status <span aria-hidden="true">↓</span></a>
+        </article>
+
+        <article class="edition-card">
+          <div class="edition-topline"><span class="edition-name">PLUS</span><span class="edition-kicker">For an organized workflow</span></div>
+          <p class="edition-price"><strong>LIFETIME</strong><span>pricing to be announced</span></p>
+          <p class="edition-description">Everything in Free, with extended online AI features and more ways to personalize and work with your chats.</p>
+          <ul class="edition-features">
+            <li>Everything in Free</li>
+            <li>Extended online AI features</li>
+            <li>Advanced chat organisation</li>
+            <li>Custom AI personalities and instructions</li>
+            <li>Advanced document tools</li>
+            <li>Chat export and additional themes</li>
+            <li>Future Plus feature updates</li>
+          </ul>
+          <button class="button edition-action purchase-disabled purchase-action" type="button" data-checkout-product="plus" disabled>Price not configured</button>
+          <p class="edition-footnote">Intended as a one-time lifetime purchase. Not a subscription.</p>
+        </article>
+
+        <article class="edition-card edition-card-ultimate">
+          <div class="ultimate-badge"><span aria-hidden="true">✦</span> MOST COMPLETE EDITION</div>
+          <div class="edition-topline"><span class="edition-name">ULTIMATE</span><span class="edition-kicker">For the full Chronos vision</span></div>
+          <p class="edition-price"><strong>LIFETIME</strong><span id="ultimatePriceLabel">select a market below</span></p>
+          <p class="edition-description">Everything in Plus, with the most advanced planned tools and workflows.</p>
+          <ul class="edition-features">
+            <li>Everything in Plus</li>
+            <li>Offline AI mode and local AI model management</li>
+            <li>Advanced coding features</li>
+            <li>Supported image understanding and voice interaction</li>
+            <li>Advanced memory and project workspaces</li>
+            <li>Future Ultimate feature updates</li>
+          </ul>
+          <button class="button edition-action purchase-disabled purchase-action" type="button" data-checkout-product="ultimate" disabled>Checking availability…</button>
+          <p class="edition-footnote">Intended as a one-time lifetime purchase. Not a subscription.</p>
+        </article>
+      </div>
+
+      <section class="regional-pricing" aria-labelledby="regional-pricing-title">
+        <div class="regional-heading">
+          <div><div class="eyebrow">ULTIMATE / REGIONAL PROPOSAL</div><h3 id="regional-pricing-title">One edition. Local pricing.</h3></div>
+          <p>Ultimate one-time prices as supplied. A price is purchasable only when it is explicitly enabled for your merchant account; unsupported currencies remain unavailable.</p>
+        </div>
+        <label class="market-picker" for="marketSelect">Your market
+          <select id="marketSelect" name="market">
+            <option value="US">USA (USD)</option>
+            <option value="NG">Nigeria (NGN)</option>
+            <option value="GB">UK (GBP)</option>
+            <option value="EZ">Eurozone (EUR)</option>
+            <option value="CA">Canada (CAD)</option>
+            <option value="AU">Australia (AUD)</option>
+            <option value="IN">India (INR)</option>
+            <option value="PK">Pakistan (PKR)</option>
+            <option value="BR">Brazil (BRL)</option>
+            <option value="ZA">South Africa (ZAR)</option>
+            <option value="MY">Malaysia (MYR)</option>
+            <option value="PH">Philippines (PHP)</option>
+            <option value="SG">Singapore (SGD)</option>
+            <option value="JP">Japan (JPY)</option>
+            <option value="KR">South Korea (KRW)</option>
+            <option value="TR">Turkey (TRY)</option>
+            <option value="MX">Mexico (MXN)</option>
+          </select>
+        </label>
+        <ul class="regional-price-list">
+          <li data-market="US"><span>USA</span><strong>$7.99</strong><small class="market-availability">Unavailable until configured</small></li>
+          <li data-market="NG"><span>Nigeria</span><strong>₦7,900</strong><small class="market-availability">Unavailable until configured</small></li>
+          <li data-market="GB"><span>UK</span><strong>£5.99</strong><small class="market-availability">Unavailable until configured</small></li>
+          <li data-market="EZ"><span>Eurozone</span><strong>€6.99</strong><small class="market-availability">Unavailable until configured</small></li>
+          <li data-market="CA"><span>Canada</span><strong>C$9.99</strong><small class="market-availability">Unavailable until configured</small></li>
+          <li data-market="AU"><span>Australia</span><strong>A$11.99</strong><small class="market-availability">Unavailable until configured</small></li>
+          <li data-market="IN"><span>India</span><strong>₹399</strong><small class="market-availability">Unavailable until configured</small></li>
+          <li data-market="PK"><span>Pakistan</span><strong>PKR 1,499</strong><small class="market-availability">Unavailable until configured</small></li>
+          <li data-market="BR"><span>Brazil</span><strong>R$29.90</strong><small class="market-availability">Unavailable until configured</small></li>
+          <li data-market="ZA"><span>South Africa</span><strong>R99.99</strong><small class="market-availability">Unavailable until configured</small></li>
+          <li data-market="MY"><span>Malaysia</span><strong>RM19.90</strong><small class="market-availability">Unavailable until configured</small></li>
+          <li data-market="PH"><span>Philippines</span><strong>₱299</strong><small class="market-availability">Unavailable until configured</small></li>
+          <li data-market="SG"><span>Singapore</span><strong>S$9.98</strong><small class="market-availability">Unavailable until configured</small></li>
+          <li data-market="JP"><span>Japan</span><strong>¥1,000</strong><small class="market-availability">Unavailable until configured</small></li>
+          <li data-market="KR"><span>South Korea</span><strong>₩9,900</strong><small class="market-availability">Unavailable until configured</small></li>
+          <li data-market="TR"><span>Turkey</span><strong>₺199.99</strong><small class="market-availability">Unavailable until configured</small></li>
+          <li data-market="MX"><span>Mexico</span><strong>MX$99</strong><small class="market-availability">Unavailable until configured</small></li>
+        </ul>
+      </section>
+
+      <section class="edition-comparison" aria-labelledby="comparison-title">
+        <div class="regional-heading">
+          <div><div class="eyebrow">PLANNED EDITION SCOPE</div><h3 id="comparison-title">Free vs Plus vs Ultimate</h3></div>
+          <p>Feature scope is planned; items will be available only as they are completed and released. Swipe or scroll horizontally to compare all editions.</p>
+        </div>
+        <div class="comparison-scroll" tabindex="0" role="region" aria-label="Planned edition comparison table; scroll horizontally to see all editions">
+          <table>
+            <caption>Planned feature comparison for Chronos AI editions</caption>
+            <thead>
+              <tr><th scope="col">Planned feature</th><th scope="col">Free</th><th scope="col">Plus</th><th scope="col">Ultimate</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">Basic AI chat, history and settings</th><td><span class="included">Included</span></td><td><span class="included">Included</span></td><td><span class="included">Included</span></td></tr>
+              <tr><th scope="row">Extended online AI features</th><td>—</td><td><span class="included">Included</span></td><td><span class="included">Included</span></td></tr>
+              <tr><th scope="row">Advanced chat organisation</th><td>—</td><td><span class="included">Included</span></td><td><span class="included">Included</span></td></tr>
+              <tr><th scope="row">Custom personalities and instructions</th><td>—</td><td><span class="included">Included</span></td><td><span class="included">Included</span></td></tr>
+              <tr><th scope="row">Advanced document tools and chat export</th><td>—</td><td><span class="included">Included</span></td><td><span class="included">Included</span></td></tr>
+              <tr><th scope="row">Additional themes and edition updates</th><td>—</td><td><span class="included">Included</span></td><td><span class="included">Included</span></td></tr>
+              <tr><th scope="row">Offline AI mode and local model management</th><td>—</td><td>—</td><td><span class="included">Included</span></td></tr>
+              <tr><th scope="row">Advanced coding features</th><td>—</td><td>—</td><td><span class="included">Included</span></td></tr>
+              <tr><th scope="row">Supported image understanding and voice interaction</th><td>—</td><td>—</td><td><span class="included">Included</span></td></tr>
+              <tr><th scope="row">Advanced memory and project workspaces</th><td>—</td><td>—</td><td><span class="included">Included</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="account-panel" id="account" aria-labelledby="account-title">
+        <div class="regional-heading">
+          <div><div class="eyebrow">YOUR CHRONOS ACCOUNT</div><h3 id="account-title">Edition and purchases</h3></div>
+          <p>Your paid edition is loaded from Supabase after sign-in. A checkout redirect alone never grants access.</p>
+        </div>
+        <p class="account-status" id="accountStatus" role="status" aria-live="polite">Secure account and checkout are unavailable until the service is configured.</p>
+        <form class="account-form" id="accountForm">
+          <label>Email
+            <input id="accountEmail" name="email" type="email" autocomplete="email" required maxlength="254">
+          </label>
+          <label>Password
+            <input id="accountPassword" name="password" type="password" autocomplete="current-password" required minlength="8" maxlength="128">
+          </label>
+          <div class="account-actions">
+            <button class="button button-primary" type="submit" data-auth-action="sign-in">Sign in</button>
+            <button class="button button-quiet" type="submit" data-auth-action="sign-up">Create account</button>
+            <button class="button button-quiet" type="button" id="restorePurchases" hidden>Restore purchases</button>
+            <button class="button button-quiet" type="button" id="refreshEntitlements" hidden>Refresh edition</button>
+            <button class="button button-quiet" type="button" id="signOut" hidden>Sign out</button>
+          </div>
+        </form>
+        <div class="account-edition" id="accountEdition" hidden></div>
+        <p class="account-message" id="accountMessage" role="status" aria-live="polite"></p>
+        <p class="account-footnote">Checkout and purchase restoration require a Chronos account. Never share your password or payment details with support.</p>
+      </section>
     </section>
 
     <section class="section-wrap section-block download-section" id="download">
@@ -131,10 +295,15 @@
 
     <section class="section-wrap faq-section" id="faq">
       <div class="eyebrow">GOOD QUESTIONS</div><h2>Frequently asked.</h2>
-      <details><summary>Will Chronos AI work offline?</summary><p>Local chat can work offline when a compatible model and all required files are already installed. Online providers and cloud-based image generation require an internet connection.</p></details>
-      <details><summary>Is Chronos AI free?</summary><p>This website is designed to be hosted using free services. Model providers, cloud services, and future distribution costs may have separate terms or limits.</p></details>
+      <details><summary>Can I use Chronos AI offline?</summary><p>Offline AI mode and local model management are planned for Ultimate only. Offline authorization requires a valid server-signed Ultimate licence refreshed online at least every 90 days. The feature also depends on a compatible local model, required files, supported hardware, and release availability. Online providers require an internet connection.</p></details>
+      <details><summary>Is Chronos AI free?</summary><p>A Free edition with basic chat, history, settings, themes, and limited online AI features is planned. Plus and Ultimate are one-time lifetime purchases, while their features become available only as they are completed and released.</p></details>
       <details><summary>Can I download it right now?</summary><p>The website is ready to connect to a release, but the installer link is intentionally disabled until a real, tested build is published.</p></details>
       <details><summary>Will every feature work on every computer?</summary><p>No. Supported features depend on the operating system, hardware, installed models, and connected AI providers. Platform-specific support will be documented for each release.</p></details>
+      <details><summary>Is Chronos AI a subscription?</summary><p>Plus and Ultimate are one-time lifetime purchases, not subscriptions. Checkout remains unavailable unless a market and currency have been configured and verified for the merchant account.</p></details>
+      <details><summary>What does lifetime access mean?</summary><p>Plus and Ultimate are one-time purchases for lifetime access to the purchased edition, not recurring subscriptions. Checkout is only available after the market and merchant currency are configured; final terms will be shared before sales open.</p></details>
+      <details><summary>Can I restore my purchase?</summary><p>Sign in with the account used for the purchase and use Restore purchases. The server verifies each transaction with Paystack before refreshing access; an unverified payment never grants an edition.</p></details>
+      <details><summary>What happens when new features are released?</summary><p>Future feature updates are part of the planned Plus and Ultimate edition scopes. Features will become available only as they are completed and released; details may evolve before launch.</p></details>
+      <details><summary>What is the difference between Plus and Ultimate?</summary><p>Plus is planned to add chat organisation, personalization, document tools, export, themes, and Plus updates. Ultimate includes the planned Plus scope plus offline AI, local model management, advanced coding, supported image understanding, voice interaction, advanced memory, project workspaces, and Ultimate updates. These are intended scopes, not claims that the features are already available.</p></details>
     </section>
   </main>
 
@@ -143,6 +312,8 @@
     <p>Built for curiosity. Designed for what comes next.</p>
     <div class="footer-bottom"><span>© <span id="year"></span> Chronos AI</span><span>Independent project · Release details will be published here</span><a href="#home">Back to top ↑</a></div>
   </footer>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4"></script>
+  <script src="config.js"></script>
   <script src="script.js"></script>
 </body>
 </html>

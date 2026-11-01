@@ -1,50 +1,62 @@
 # Chronos AI Website
 
-A responsive, static download website for Chronos AI. It uses plain HTML, CSS, and JavaScript so it can be hosted free on GitHub Pages.
+A responsive static website for Chronos AI, hosted on GitHub Pages. It preserves
+the existing plain HTML/CSS/JavaScript frontend and uses Supabase Edge Functions
+for authentication, one-time lifetime checkout, payment verification, and
+entitlements.
 
 ## Files
 
-- `index.html` — page content and sections
-- `styles.css` — responsive design and visual styling
-- `script.js` — mobile navigation and footer year
-- `assets/chronos-web-logo.png` — Chronos web logo
+- `index.html` — existing site, editions, market pricing, and account section
+- `styles.css` — branded responsive styling
+- `script.js` — navigation and Supabase account/purchase UX
+- `config.js` — public Supabase URL and anon-key placeholders (never secrets)
+- `supabase/migrations/` — database schema, RLS, and disabled supplied prices
+- `supabase/functions/` — secure checkout, verification, webhook, entitlement,
+  and restoration endpoints
+- `PAYMENTS_SETUP.md` — setup, deployment, testing, currency configuration, and
+  Flutter Windows API instructions
 
 ## Run locally
 
-You can double-click `index.html` to preview it in a browser. For a more reliable local preview, open a terminal in this folder and run one of these if installed:
+Configure the public Supabase values in `config.js` after creating a project.
+Serve the repository over HTTP(S); account auth, callback handling, and Edge
+Function requests do not work from a `file://` URL. For example:
 
 ```bash
 python -m http.server 8000
 ```
 
-Then visit `http://localhost:8000`.
+Then visit `http://localhost:8000`. Configure that local redirect URL in
+Supabase Auth if testing sign-in.
 
-## Publish for free with GitHub Pages
+## Payments
 
-1. Create a GitHub repository named `chronos-ai-website`.
-2. Upload all files and the `assets` folder to the repository root.
-3. In the repository, open **Settings → Pages**.
-4. Under build and deployment, choose **Deploy from a branch**.
-5. Choose the `main` branch and `/ (root)` folder, then save.
-6. Wait for GitHub Pages to publish the site. The URL will look like `https://YOUR-USERNAME.github.io/chronos-ai-website/`.
+Plus and Ultimate are lifetime one-time purchases, not subscriptions. The
+provided Ultimate prices are seeded with checkout disabled, all currencies
+remain unavailable until verified for the Paystack merchant, and no Plus price
+is invented. Do not enable production checkout until external Supabase and
+Paystack configuration is complete.
 
-## Connect a real installer later
+Follow [PAYMENTS_SETUP.md](./PAYMENTS_SETUP.md) for credentials, schema/RLS,
+Edge Function deployment, webhook setup, safe testing, live-mode activation,
+and Flutter integration. No secret keys belong in this static website.
 
-The Windows download button is deliberately disabled until a real installer exists.
+## Publish on GitHub Pages
 
-When the Windows installer has been built and uploaded to GitHub Releases:
+In repository **Settings → Pages**, choose deployment from the `main` branch
+and repository root, then publish the static website files. Deploy the Supabase
+migration and Edge Functions separately by following the setup guide. Do not
+push credentials or an unreviewed live configuration to GitHub.
 
-1. Open `index.html`.
-2. Find the link with `id="windowsDownload"`.
-3. Replace `href="#"` with the real release asset URL.
-4. Remove `aria-disabled="true"` and the `disabled-button` class.
-5. Update the platform cards and requirements with details verified against the actual build.
+## Windows installer
 
-Do not link to a placeholder or claim macOS/Linux builds are available until they are built and tested.
+The Windows download button remains disabled until a real tested installer is
+published. Replace its placeholder URL only after a release is available, and
+update supported-platform requirements based on the actual build.
 
 ## Notes
 
-- This is a static website; no backend or database is required.
-- The Google Fonts stylesheet uses an online font service. The site still has fallback fonts if that service is unavailable.
-- Keep large model files out of the website repository. Host actual application releases separately.
-- Review model and third-party provider licenses before distributing Chronos AI or its model files.
+- Google Fonts is an optional online dependency; local fallback fonts remain.
+- Keep large model files out of this website repository.
+- Review model and third-party provider licenses before distribution.
