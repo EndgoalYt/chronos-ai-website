@@ -3,8 +3,8 @@ import {
   applyVerifiedPayment,
   assertTransactionMatches,
   findPurchase,
-  transactionStatus,
   validateReference,
+  verifiedTransactionEvent,
   verifyPaystackTransaction,
 } from "../_shared/payments.ts";
 
@@ -15,22 +15,30 @@ serve(async (request) => {
   const reference = validateReference(body.reference);
   const admin = createAdminClient();
   const purchase = await findPurchase(admin, reference, user.id);
-  if (purchase.status === "refunded") {
-    return Response.json({ status: "refunded", edition: null, reference });
+  if (purchase.status === "refunded" || purchase.status === "reversed") {
+    return Response.json({ status: purchase.status, edition: null, reference });
   }
 
   const transaction = await verifyPaystackTransaction(reference);
   assertTransactionMatches(transaction, purchase);
-  const status = transactionStatus(transaction.status);
+  const event = verifiedTransactionEvent(transaction, "verify-payment");
   const result = await applyVerifiedPayment(admin, {
-    eventId: `verify:${reference}:${transaction.status}:${transaction.amount}`,
-    eventType: "verify-payment",
+    eventId: event.eventId,
+    eventType: event.eventType,
     purchase,
-    status,
+    status: event.status,
+    amountMinor: event.amountMinor,
     transactionId: transaction.id,
   });
-  if (result.status === "refunded") {
-    throw new HttpError(402, "This purchase has been refunded and no longer grants paid access.", "purchase_refunded");
+  if (result.status === "refunded" || result.status === "reversed") {
+    const message = result.status === "reversed"
+      ? "This transaction was reversed and no longer grants paid access."
+      : "This purchase has been refunded and no longer grants paid access.";
+    throw new HttpError(
+      402,
+      message,
+      result.status === "reversed" ? "purchase_reversed" : "purchase_refunded",
+    );
   }
   return Response.json({
     status: result.status,

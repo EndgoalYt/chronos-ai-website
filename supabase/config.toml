@@ -1,2 +1,5 @@
 [functions.paystack-webhook]
 verify_jwt = false
+
+[functions.entitlement-jwks]
+verify_jwt = false

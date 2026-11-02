@@ -5,3 +5,5 @@ supabase/.env
 supabase/.env.*
 !.env.example
 .supabase/
+
+supabase/.temp/

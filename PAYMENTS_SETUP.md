@@ -84,6 +84,7 @@ in the Supabase project, never in the browser bundle:
 | `PAYMENT_CALLBACK_URL` | HTTPS return URL, e.g. `https://endgoalyt.github.io/chronos-ai-website/?payment=return` |
 | `ENTITLEMENT_SIGNING_PRIVATE_JWK` | Server-only ES256/P-256 private JWK for offline licences |
 | `ENTITLEMENT_SIGNING_KEY_ID` | Public key identifier (`kid`) embedded in signed licences |
+| `ENTITLEMENT_PREVIOUS_PUBLIC_JWKS` | Optional JSON array of prior public ES256/P-256 JWKs retained during key rotation; never include private fields |
 
 Supabase supplies `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and
 `SUPABASE_SERVICE_ROLE_KEY` to Edge Functions. The service-role key is highly
@@ -146,6 +147,7 @@ supabase functions deploy create-checkout
 supabase functions deploy verify-payment
 supabase functions deploy paystack-webhook
 supabase functions deploy get-entitlements
+supabase functions deploy entitlement-jwks
 supabase functions deploy restore-purchases
 ```
 
@@ -178,8 +180,18 @@ Use the matching test webhook when running test mode, and the live webhook only
 after switching the project to live mode. Paystack signs requests using the
 matching secret key; the function validates `x-paystack-signature`, re-verifies
 each supported transaction against Paystack, checks reference/amount/currency/
-user/product metadata, and de-duplicates event bodies. Test that Paystack can
-reach the deployed HTTPS endpoint before relying on webhooks.
+user/product metadata, and de-duplicates refund references and charge event
+bodies. Test that Paystack can reach the deployed HTTPS endpoint before relying
+on webhooks.
+
+The Paystack refund guide describes a refund as a partial or full repayment and
+places `amount` on the individual refund request/record. The `refund.processed`
+notification is handled as that refund's amount in integer minor units, not as
+a running transaction refund total. The backend adds distinct processed refund
+records under a purchase-row lock. It rejects a processed notification without
+a stable refund reference rather than risk counting an unidentifiable delivery
+twice. See the [Paystack Refunds guide](https://docs-v2.paystack.com/docs/payments/refunds/)
+and [Webhooks guide](https://docs-v2.paystack.com/docs/payments/webhooks/).
 
 ## 6. Database and RLS configuration
 
@@ -188,6 +200,30 @@ dashboard, verify that RLS is enabled on all six tables. Do not add a policy
 that permits client writes to `purchases`, `entitlements`, or `payment_events`.
 Do not grant browser clients the service-role role or execution permission on
 `apply_verified_payment`.
+
+The forward migration `20261101200600_refund_event_integrity.sql` replaces only
+the restricted payment RPC; it adds no tables or data changes. It validates that
+a repeated provider event ID refers to the same purchase and event contents.
+If rollback is required, first stop webhook processing and restore the
+preceding RPC definition from the prior migration. Do not delete payment events
+or reverse purchase/entitlement changes as part of rollback; reconcile any
+in-flight refunds against Paystack before resuming webhook processing.
+Restoring the older RPC also removes the new duplicate-ID consistency check,
+so keep webhook processing paused until a safe replacement is installed.
+
+The base migration already contains the partial/cumulative refund logic, while
+the `20261101160000` and `20261101170000` migrations repeat earlier function
+updates. They may be consolidated before a first deployment only if migration
+history confirms that neither migration has been applied in any environment.
+Otherwise keep applied migrations unchanged and apply the new integrity fix as
+a forward migration.
+
+The forward migration `20261101220000_reversed_transaction_state.sql` records a
+verified reversed transaction as a distinct terminal purchase/event status.
+Its transaction amount is retained as event context, not added to the cumulative
+refund total. Verification and restoration share a stable transaction-scoped
+event ID; the RPC keeps its row lock and applies the same sourced-entitlement
+revocation or replacement-purchase transfer behavior used for full refunds.
 
 The website lists all 17 Ultimate amounts exactly as supplied, but labels each
 market unavailable until `get-entitlements` reports that its database row is
@@ -229,7 +265,9 @@ Before any live launch, also verify these cases against the test project:
 | User attempts browser SQL update/insert to their paid rows | Denied by grants/RLS |
 | Restore for a verified paid transaction | Entitlement refreshed for that same user |
 | Restore of unverified/pending/failed payment | No paid entitlement |
-| Verified full or partial refund | Purchase marked refunded and access revoked unless another paid purchase remains |
+| Verified partial refund below the original purchase amount cumulatively | Purchase remains paid and lifetime access remains active |
+| Cumulative verified refunds reach the original purchase amount | Purchase marked refunded and access revoked unless another paid purchase remains |
+| Partial refund followed by verified reversed status in verification or restore | Purchase marked reversed; actual refund total unchanged; entitlement revoked or transferred; repeated status is idempotent. If the purchase was already fully refunded, it remains `refunded` and its entitlement remains revoked or transferred. |
 
 After enabling the test market, test both desktop and narrow/mobile viewport
 layouts, account creation/email verification, sign-in/sign-out, refresh,
@@ -281,6 +319,18 @@ and JSON `Content-Type`:
 | `/create-checkout` | `{"product_id":"ultimate","market_code":"US"}` | Creates/resumes a server-priced Paystack checkout; open returned `authorizationUrl` in the system browser |
 | `/verify-payment` | `{"reference":"CHR-..."}` | Verifies a Paystack return reference and refreshes access |
 | `/restore-purchases` | `{}` | Re-verifies this user's stored transactions |
+
+`GET /functions/v1/entitlement-jwks` is a public endpoint and does not require a user session. It
+returns the active signing key's public JWK plus any valid previous public keys
+configured in `ENTITLEMENT_PREVIOUS_PUBLIC_JWKS`. The response contains only
+public P-256 key coordinates and ES256 metadata (`kid`, `alg`, and `use`); it
+never exposes the signing private key. Configure rotation by setting the new
+active `ENTITLEMENT_SIGNING_PRIVATE_JWK` and `ENTITLEMENT_SIGNING_KEY_ID`, and
+setting `ENTITLEMENT_PREVIOUS_PUBLIC_JWKS` to a JSON array containing the old
+public JWK(s), each with its original `kid`. Keep old public keys published
+until all licences signed by them have expired. This public-key endpoint sends
+`Cache-Control: public, max-age=300, stale-while-revalidate=300`. Personalized
+`get-entitlements` responses send `Cache-Control: no-store`.
 
 `get-entitlements` returns `edition` (`free`, `plus`, or `ultimate`),
 `entitlements.plus.active`, `entitlements.ultimate.active`,

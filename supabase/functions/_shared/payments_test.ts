@@ -1,8 +1,12 @@
 import { HttpError } from "./http.ts";
 import {
   assertTransactionMatches,
+  classifyRefundAmount,
+  parseRefundAmountMinor,
+  paystackRefundEventId,
   transactionStatus,
   validateReference,
+  verifiedTransactionEvent,
   type PaystackTransaction,
   type PurchaseRecord,
 } from "./payments.ts";
@@ -18,13 +22,38 @@ Deno.test("pending, paid, failed, abandoned, and reversed states stay distinct",
     ["success", "paid"],
     ["failed", "failed"],
     ["abandoned", "failed"],
-    ["reversed", "refunded"],
+    ["reversed", "reversed"],
     ["ongoing", "pending"],
   ];
   for (const [providerStatus, expected] of cases) {
     if (transactionStatus(providerStatus) !== expected) {
       throw new Error(`Unexpected mapping for ${providerStatus}.`);
     }
+  }
+});
+
+Deno.test("reversed verification and restoration use one non-refund event", () => {
+  const transaction: PaystackTransaction = {
+    id: 123,
+    reference: "CHR-53a087fb-73a3-4f4f-9891-03f943f24e80",
+    status: "reversed",
+    amount: 799,
+    currency: "USD",
+  };
+  const verified = verifiedTransactionEvent(transaction, "verify-payment");
+  const restored = verifiedTransactionEvent(transaction, "restore-purchases");
+
+  if (
+    verified.eventId !== "paystack:transaction:123:reversed" ||
+    verified.eventId !== restored.eventId ||
+    verified.eventType !== "transaction.reversed" ||
+    verified.eventType !== restored.eventType ||
+    verified.status !== "reversed" ||
+    restored.status !== "reversed" ||
+    verified.amountMinor !== transaction.amount ||
+    restored.amountMinor !== transaction.amount
+  ) {
+    throw new Error("Reversed verification and restoration must share one event.");
   }
 });
 
@@ -67,6 +96,46 @@ Deno.test("verified payment metadata must match its stored owner, product, amoun
     ...transaction,
     currency: "EUR",
   }, purchase), 409);
+});
+
+Deno.test("refund amounts distinguish partial and full refunds and reject invalid values", () => {
+  if (parseRefundAmountMinor("250") !== 250) {
+    throw new Error("Paystack string amounts must parse as integer minor units.");
+  }
+  if (classifyRefundAmount(250, 799) !== "partial_refunded") {
+    throw new Error("A refund below the purchase amount must be partial.");
+  }
+  if (classifyRefundAmount(799, 799) !== "refunded") {
+    throw new Error("A refund equal to the purchase amount must be full.");
+  }
+
+  for (const amount of [
+    0,
+    -1,
+    800,
+    799.5,
+    Number.NaN,
+    Number.POSITIVE_INFINITY,
+    "0",
+    "-1",
+    "799.5",
+    "not-an-amount",
+    "9007199254740992",
+  ]) {
+    expectHttpError(() => classifyRefundAmount(amount, 799), 400);
+  }
+});
+
+Deno.test("refund notification identifiers are stable for idempotent processing", () => {
+  const first = paystackRefundEventId(12345);
+  const retry = paystackRefundEventId(12345);
+  if (!first || first !== retry) throw new Error("Repeated refund identifiers must map to the same event.");
+  if (paystackRefundEventId(0) !== null || paystackRefundEventId("../invalid") !== null) {
+    throw new Error("Invalid refund identifiers must be rejected.");
+  }
+  if (paystackRefundEventId("refund-reference-123") !== "paystack:refund:refund-reference-123") {
+    throw new Error("Paystack refund references must provide stable event identifiers.");
+  }
 });
 
 function expectHttpError(action: () => unknown, status: number): void {

@@ -2,8 +2,11 @@ import { createAdminClient, HttpError, serve } from "../_shared/http.ts";
 import {
   applyVerifiedPayment,
   assertTransactionMatches,
+  classifyRefundAmount,
   findPurchase,
+  parseRefundAmountMinor,
   paystackSecret,
+  paystackRefundEventId,
   transactionStatus,
   verifyPaystackTransaction,
 } from "../_shared/payments.ts";
@@ -13,9 +16,11 @@ interface PaystackEvent {
   data?: {
     reference?: string;
     transaction_reference?: string;
+    refund_reference?: string | null;
     status?: string;
-    amount?: number;
+    amount?: number | string;
     currency?: string;
+    id?: number | string;
   };
 }
 
@@ -71,19 +76,20 @@ serve(async (request) => {
   const transaction = await verifyPaystackTransaction(reference);
   assertTransactionMatches(transaction, purchase);
 
+  let refundStatus: "partial_refunded" | "refunded" | null = null;
+  let refundAmountMinor: number | null = null;
   if (isRefund) {
-    if (
-      (transaction.status !== "success" && transaction.status !== "reversed") ||
-      !Number.isSafeInteger(event.data.amount) ||
-      (event.data.amount as number) < 1 ||
-      (event.data.amount as number) > purchase.amount_minor ||
-      event.data.currency !== purchase.currency
-    ) {
+    if (transaction.status !== "success" && transaction.status !== "reversed") {
+      throw new HttpError(409, "The original Paystack transaction is not refundable.", "payment_mismatch");
+    }
+    if (event.data.currency !== purchase.currency) {
       throw new HttpError(409, "Refund details do not match the verified purchase.", "payment_mismatch");
     }
+    refundAmountMinor = parseRefundAmountMinor(event.data.amount);
+    refundStatus = classifyRefundAmount(refundAmountMinor, purchase.amount_minor);
   }
 
-  const status = isRefund ? "refunded" : transactionStatus(transaction.status);
+  const status = refundStatus ?? transactionStatus(transaction.status);
   if (
     (event.event === "charge.success" && status !== "paid") ||
     (event.event === "charge.failed" && status !== "failed")
@@ -91,20 +97,31 @@ serve(async (request) => {
     throw new HttpError(409, "Webhook event does not match the verified Paystack status.", "payment_mismatch");
   }
 
-  const bodyDigest = new Uint8Array(
-    await crypto.subtle.digest("SHA-256", new TextEncoder().encode(rawBody)),
-  );
-  const eventId = `webhook:${[...bodyDigest].map((byte) => byte.toString(16).padStart(2, "0")).join("")}`;
+  const eventId = isRefund
+    ? paystackRefundEventId(event.data.refund_reference) ??
+      paystackRefundEventId(event.data.id)
+    : await webhookEventId(rawBody);
+  if (!eventId) {
+    throw new HttpError(400, "Refund notification is missing a stable refund reference.", "invalid_refund_reference");
+  }
   const result = await applyVerifiedPayment(admin, {
     eventId,
     eventType: event.event,
     purchase,
     status,
+    amountMinor: refundAmountMinor ??
+      (typeof event.data.amount === "number" ? event.data.amount : transaction.amount),
     transactionId: transaction.id,
-    ...(isRefund ? { eventAmountMinor: event.data.amount } : {}),
   });
   return Response.json({ received: true, duplicate: result.duplicate, status: result.status });
 });
+
+async function webhookEventId(rawBody: string): Promise<string> {
+  const bodyDigest = new Uint8Array(
+    await crypto.subtle.digest("SHA-256", new TextEncoder().encode(rawBody)),
+  );
+  return `webhook:${[...bodyDigest].map((byte) => byte.toString(16).padStart(2, "0")).join("")}`;
+}
 
 function constantTimeEqual(left: string, right: string): boolean {
   if (left.length !== right.length) return false;

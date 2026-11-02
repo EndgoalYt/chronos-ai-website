@@ -3,7 +3,7 @@ import {
   applyVerifiedPayment,
   assertTransactionMatches,
   PurchaseRecord,
-  transactionStatus,
+  verifiedTransactionEvent,
   verifyPaystackTransaction,
 } from "../_shared/payments.ts";
 
@@ -16,6 +16,7 @@ serve(async (request) => {
     .select("id,user_id,product_id,product_price_id,market_code,reference,amount_minor,currency,status,checkout_url")
     .eq("user_id", user.id)
     .neq("status", "refunded")
+    .neq("status", "reversed")
     .order("created_at", { ascending: false })
     .limit(50);
   if (error) {
@@ -28,11 +29,13 @@ serve(async (request) => {
     try {
       const transaction = await verifyPaystackTransaction(row.reference);
       assertTransactionMatches(transaction, row);
+      const event = verifiedTransactionEvent(transaction, "restore-purchases");
       const result = await applyVerifiedPayment(admin, {
-        eventId: `restore:${row.reference}:${transaction.status}:${transaction.amount}`,
-        eventType: "restore-purchases",
+        eventId: event.eventId,
+        eventType: event.eventType,
         purchase: row,
-        status: transactionStatus(transaction.status),
+        status: event.status,
+        amountMinor: event.amountMinor,
         transactionId: transaction.id,
       });
       results.push({ reference: row.reference, status: result.status });

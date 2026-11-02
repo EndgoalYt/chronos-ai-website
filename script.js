@@ -158,6 +158,9 @@ async function verifyReturnedPayment() {
   } else if (data.status === 'refunded') {
     await loadEntitlements();
     showAccountMessage('This payment was refunded. Paid access is not active.', true);
+  } else if (data.status === 'reversed') {
+    await loadEntitlements();
+    showAccountMessage('This transaction was reversed. Paid access is not active.', true);
   } else if (data.status === 'failed') {
     showAccountMessage('Payment was not completed. No paid access was granted.', true);
   } else {
@@ -256,8 +259,10 @@ if (!configured || !window.supabase?.createClient) {
       if (error) throw new Error(await functionErrorMessage(error));
       await loadEntitlements();
       const failures = (data.purchases ?? []).filter(item => item.error).length;
+      const reversed = (data.purchases ?? []).filter(item => item.status === 'reversed').length;
       showAccountMessage(
         `Checked ${data.checked} purchase(s); ${data.restored} verified paid purchase(s) restored.` +
+        (reversed ? ` ${reversed} reversed purchase(s) no longer grant paid access.` : '') +
         (failures ? ` ${failures} could not be verified; retry or contact support.` : ''),
         failures > 0,
       );

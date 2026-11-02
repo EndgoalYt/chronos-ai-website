@@ -10,9 +10,27 @@ export interface PurchaseRecord {
   reference: string;
   amount_minor: number;
   currency: string;
-  status: "pending" | "paid" | "failed" | "refunded";
+  status: "pending" | "paid" | "failed" | "refunded" | "reversed";
   checkout_url: string | null;
 }
+
+export type PurchaseStatus = PurchaseRecord["status"];
+export type PaymentEventStatus = PurchaseStatus | "partial_refunded";
+
+export interface PaymentEventResult {
+  duplicate: boolean;
+  status: PurchaseStatus;
+  product_id: PurchaseRecord["product_id"];
+}
+
+export interface VerifiedTransactionEvent {
+  eventId: string;
+  eventType: string;
+  status: PaymentEventStatus;
+  amountMinor: number;
+}
+
+export type VerifiedTransactionSource = "verify-payment" | "restore-purchases";
 
 export interface PaystackTransaction {
   id: number;
@@ -63,6 +81,45 @@ export function validateReference(value: unknown): string {
     throw new HttpError(400, "A valid transaction reference is required.", "invalid_reference");
   }
   return value;
+}
+
+export function classifyRefundAmount(
+  amount: unknown,
+  purchaseAmount: number,
+): "partial_refunded" | "refunded" {
+  const refundAmount = parseRefundAmountMinor(amount);
+  if (
+    !Number.isSafeInteger(purchaseAmount) ||
+    purchaseAmount <= 0 ||
+    refundAmount > purchaseAmount
+  ) {
+    throw new HttpError(400, "Refund amount is invalid.", "invalid_refund_amount");
+  }
+  return refundAmount === purchaseAmount ? "refunded" : "partial_refunded";
+}
+
+export function parseRefundAmountMinor(amount: unknown): number {
+  const parsed = typeof amount === "string" && /^\d+$/.test(amount)
+    ? Number(amount)
+    : amount;
+  if (
+    typeof parsed !== "number" ||
+    !Number.isSafeInteger(parsed) ||
+    parsed <= 0
+  ) {
+    throw new HttpError(400, "Refund amount is invalid.", "invalid_refund_amount");
+  }
+  return parsed;
+}
+
+export function paystackRefundEventId(refundId: unknown): string | null {
+  if (typeof refundId === "number" && Number.isSafeInteger(refundId) && refundId > 0) {
+    return `paystack:refund:${refundId}`;
+  }
+  if (typeof refundId === "string" && /^[A-Za-z0-9._:-]{1,128}$/.test(refundId)) {
+    return `paystack:refund:${refundId}`;
+  }
+  return null;
 }
 
 export async function verifyPaystackTransaction(
@@ -165,17 +222,20 @@ export async function applyVerifiedPayment(
     eventId: string;
     eventType: string;
     purchase: PurchaseRecord;
-    status: "pending" | "paid" | "failed" | "refunded";
+    status: PaymentEventStatus;
+    amountMinor: number;
     transactionId: number;
-    eventAmountMinor?: number;
   },
-): Promise<{ duplicate: boolean; status: string; product_id: string }> {
+): Promise<PaymentEventResult> {
+  if (!Number.isSafeInteger(values.amountMinor) || values.amountMinor < 0) {
+    throw new HttpError(400, "Payment event amount is invalid.", "invalid_payment_amount");
+  }
   const { data, error } = await admin.rpc("apply_verified_payment", {
     p_provider_event_id: values.eventId,
     p_reference: values.purchase.reference,
     p_event_type: values.eventType,
     p_payment_status: values.status,
-    p_amount_minor: values.eventAmountMinor ?? values.purchase.amount_minor,
+    p_amount_minor: values.amountMinor,
     p_currency: values.purchase.currency,
     p_transaction_id: values.transactionId,
   });
@@ -183,16 +243,53 @@ export async function applyVerifiedPayment(
     console.error("Payment state update failed:", error.message);
     throw new HttpError(500, "Payment was verified, but account access could not be refreshed.", "entitlement_update_failed");
   }
-  return data as { duplicate: boolean; status: string; product_id: string };
+  if (
+    !data ||
+    typeof data.duplicate !== "boolean" ||
+    !["pending", "paid", "failed", "refunded", "reversed"].includes(data.status) ||
+    !["plus", "ultimate"].includes(data.product_id)
+  ) {
+    console.error("Payment state update returned an invalid response.");
+    throw new HttpError(500, "Payment status could not be confirmed.", "invalid_payment_response");
+  }
+  return {
+    duplicate: data.duplicate,
+    status: data.status as PurchaseStatus,
+    product_id: data.product_id as PurchaseRecord["product_id"],
+  };
 }
 
 export function transactionStatus(
   status: string,
-): "pending" | "paid" | "failed" | "refunded" {
+): "pending" | "paid" | "failed" | "refunded" | "reversed" {
   if (status === "success") return "paid";
   if (status === "failed" || status === "abandoned") return "failed";
-  if (status === "reversed") return "refunded";
+  if (status === "reversed") return "reversed";
   return "pending";
+}
+
+export function verifiedTransactionEvent(
+  transaction: PaystackTransaction,
+  source: VerifiedTransactionSource,
+): VerifiedTransactionEvent {
+  const status = transactionStatus(transaction.status);
+  if (status === "reversed") {
+    if (!Number.isSafeInteger(transaction.id) || transaction.id <= 0) {
+      throw new HttpError(409, "The reversed transaction ID is invalid.", "payment_mismatch");
+    }
+    return {
+      eventId: `paystack:transaction:${transaction.id}:reversed`,
+      eventType: "transaction.reversed",
+      status,
+      amountMinor: transaction.amount,
+    };
+  }
+  return {
+    eventId: `${source}:${transaction.reference}:${transaction.status}:${transaction.amount}`,
+    eventType: source,
+    status,
+    amountMinor: transaction.amount,
+  };
 }
 
 export async function findPurchase(

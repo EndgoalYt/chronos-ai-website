@@ -86,5 +86,5 @@ serve(async (request) => {
     offers,
     paymentMode: paymentReady ? mode : "unconfigured",
     purchases: pendingOrFailedPurchases,
-  });
+  }, { headers: { "cache-control": "no-store" } });
 });

@@ -28,7 +28,7 @@ export function jsonResponse(
 export function corsHeaders(request: Request): Record<string, string> {
   const headers: Record<string, string> = {
     "access-control-allow-headers": "authorization, apikey, content-type, x-client-info",
-    "access-control-allow-methods": "POST, OPTIONS",
+    "access-control-allow-methods": "GET, POST, OPTIONS",
     "access-control-max-age": "86400",
     vary: "Origin",
   };
@@ -142,5 +142,11 @@ export async function requireUser(request: Request): Promise<User> {
 export function requirePost(request: Request): void {
   if (request.method !== "POST") {
     throw new HttpError(405, "Use POST for this endpoint.", "method_not_allowed");
+  }
+}
+
+export function requireGet(request: Request): void {
+  if (request.method !== "GET") {
+    throw new HttpError(405, "Use GET for this endpoint.", "method_not_allowed");
   }
 }

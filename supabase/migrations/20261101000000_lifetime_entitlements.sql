@@ -73,7 +73,7 @@ create table public.payment_events (
   reference text not null,
   event_type text not null,
   payment_status text not null
-    check (payment_status in ('pending', 'paid', 'failed', 'refunded')),
+    check (payment_status in ('pending', 'paid', 'failed', 'partial_refunded', 'refunded')),
   amount_minor bigint not null check (amount_minor >= 0),
   currency text not null check (currency ~ '^[A-Z]{3}$'),
   received_at timestamptz not null default now()
@@ -174,10 +174,13 @@ set search_path = ''
 as $$
 declare
   v_purchase public.purchases%rowtype;
+  v_entitlement public.entitlements%rowtype;
   v_inserted integer;
   v_replacement_purchase_id uuid;
+  v_refunded_total bigint;
 begin
-  if p_payment_status not in ('pending', 'paid', 'failed', 'refunded') then
+  if p_payment_status is null
+    or p_payment_status not in ('pending', 'paid', 'failed', 'partial_refunded', 'refunded') then
     raise exception 'Unsupported payment status';
   end if;
 
@@ -190,13 +193,21 @@ begin
     raise exception 'Purchase reference not found';
   end if;
 
-  if v_purchase.currency <> p_currency
-    or (
-      (p_payment_status = 'refunded'
-        and (p_amount_minor < 1 or p_amount_minor > v_purchase.amount_minor))
-      or (p_payment_status <> 'refunded'
-        and v_purchase.amount_minor <> p_amount_minor)
-    ) then
+  if p_currency is null or v_purchase.currency is distinct from p_currency then
+    raise exception 'Verified transaction does not match purchase';
+  end if;
+
+  if p_payment_status in ('partial_refunded', 'refunded') then
+    if p_amount_minor is null
+      or p_amount_minor <= 0
+      or (p_payment_status = 'partial_refunded' and p_amount_minor >= v_purchase.amount_minor)
+      or (p_payment_status = 'refunded' and p_amount_minor <> v_purchase.amount_minor) then
+      raise exception 'Refund amount does not match refund status';
+    end if;
+    if v_purchase.status not in ('paid', 'refunded') then
+      raise exception 'Only a paid purchase can be refunded';
+    end if;
+  elsif p_amount_minor is null or v_purchase.amount_minor <> p_amount_minor then
     raise exception 'Verified transaction does not match purchase';
   end if;
 
@@ -218,6 +229,18 @@ begin
       'status', v_purchase.status,
       'product_id', v_purchase.product_id
     );
+  end if;
+
+  if p_payment_status in ('partial_refunded', 'refunded') then
+    select coalesce(sum(amount_minor), 0)
+    into v_refunded_total
+    from public.payment_events
+    where purchase_id = v_purchase.id
+      and payment_status in ('partial_refunded', 'refunded');
+
+    if v_refunded_total > v_purchase.amount_minor then
+      raise exception 'Cumulative refunds exceed the purchase amount';
+    end if;
   end if;
 
   if v_purchase.status <> 'refunded' then
@@ -245,36 +268,48 @@ begin
       update public.purchases
       set status = 'failed'
       where id = v_purchase.id;
-    elsif p_payment_status = 'refunded' then
+    elsif p_payment_status in ('partial_refunded', 'refunded')
+      and v_refunded_total < v_purchase.amount_minor then
+      null;
+    elsif p_payment_status in ('partial_refunded', 'refunded')
+      and v_refunded_total = v_purchase.amount_minor then
       update public.purchases
       set status = 'refunded',
           refunded_at = coalesce(refunded_at, now())
       where id = v_purchase.id;
 
-      select id into v_replacement_purchase_id
-      from public.purchases
+      select * into v_entitlement
+      from public.entitlements
       where user_id = v_purchase.user_id
         and product_id = v_purchase.product_id
-        and status = 'paid'
-        and id <> v_purchase.id
-      order by paid_at desc nulls last, created_at desc
-      limit 1;
+      for update;
 
-      if v_replacement_purchase_id is null then
-        update public.entitlements
-        set status = 'revoked',
-            revoked_at = coalesce(revoked_at, now()),
-            updated_at = now()
+      if found
+        and v_entitlement.status = 'active'
+        and v_entitlement.source_purchase_id = v_purchase.id then
+        select id into v_replacement_purchase_id
+        from public.purchases
         where user_id = v_purchase.user_id
-          and product_id = v_purchase.product_id;
-      else
-        update public.entitlements
-        set source_purchase_id = v_replacement_purchase_id,
-            status = 'active',
-            revoked_at = null,
-            updated_at = now()
-        where user_id = v_purchase.user_id
-          and product_id = v_purchase.product_id;
+          and product_id = v_purchase.product_id
+          and status = 'paid'
+          and id <> v_purchase.id
+        order by paid_at desc nulls last, created_at desc
+        limit 1;
+
+        if v_replacement_purchase_id is null then
+          update public.entitlements
+          set status = 'revoked',
+              revoked_at = coalesce(revoked_at, now()),
+              updated_at = now()
+          where id = v_entitlement.id;
+        else
+          update public.entitlements
+          set source_purchase_id = v_replacement_purchase_id,
+              status = 'active',
+              revoked_at = null,
+              updated_at = now()
+          where id = v_entitlement.id;
+        end if;
       end if;
     end if;
   end if;
