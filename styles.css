@@ -75,4 +75,10 @@ body{position:relative}
 .account-message{min-height:1.6em;margin:15px 0 0;color:#9fe9de;font-size:12px}
 .account-message.is-error{color:#ffb1b8}
 .account-footnote{margin:8px 0 0;color:#8490aa;font-size:10px}
+.install-link,.install-help-dismiss{color:#b9d1ff;background:transparent;border:1px solid rgba(102,156,255,.35);border-radius:8px;padding:8px 12px;font:inherit;font-size:12px;cursor:pointer}
+.install-link{margin:0 0 16px}
+.install-help{max-width:520px;margin:0 auto 18px;padding:14px 16px;border:1px solid var(--line);border-radius:10px;background:rgba(13,20,42,.88);color:var(--muted);font-size:12px}
+.install-help p{margin:0 0 10px}
+.install-help-dismiss{font-size:11px;padding:5px 10px}
+.install-link:hover,.install-help-dismiss:hover{border-color:rgba(102,156,255,.7);color:white}
 @media(max-width:650px){.market-picker{align-items:stretch;flex-direction:column;gap:7px}.market-picker select{width:100%}.regional-price-list li{min-height:67px}.account-panel{margin-top:56px;padding:22px 18px}.account-form{grid-template-columns:1fr}.account-actions{grid-column:auto}.account-actions .button{flex:1 1 100%}}

@@ -5,8 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#070914">
   <meta name="description" content="Meet Chronos AI — a flexible AI assistant built for thoughtful conversations, local AI, and creative work.">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Chronos">
   <title>Chronos AI — Think beyond the moment</title>
+  <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" type="image/png" href="assets/chronos-web-logo.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="./assets/pwa/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -310,6 +314,11 @@
   <footer class="site-footer">
     <a class="brand footer-brand" href="#home"><span class="brand-mark"><img src="assets/chronos-web-logo.png" alt=""></span><span>CHRONOS<span class="brand-ai"> AI</span></span></a>
     <p>Built for curiosity. Designed for what comes next.</p>
+    <button class="install-link" id="pwaInstallButton" type="button" hidden>Install Chronos</button>
+    <div class="install-help" id="pwaInstallHelp" role="region" aria-label="Install Chronos on iPhone or iPad" hidden>
+      <p>On iPhone or iPad, open this page in Safari, tap Share, then choose <strong>Add to Home Screen</strong>. Online AI features still need an internet connection.</p>
+      <button class="install-help-dismiss" id="pwaInstallHelpDismiss" type="button">Dismiss</button>
+    </div>
     <div class="footer-bottom"><span>© <span id="year"></span> Chronos AI</span><span>Independent project · Release details will be published here</span><a href="#home">Back to top ↑</a></div>
   </footer>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.57.4"></script>

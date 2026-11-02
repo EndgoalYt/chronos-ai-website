@@ -1,3 +1,57 @@
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js', { scope: './' })
+      .catch(error => console.warn('Chronos offline shell could not be registered.', error));
+  });
+}
+
+const pwaInstallButton = document.getElementById('pwaInstallButton');
+const pwaInstallHelp = document.getElementById('pwaInstallHelp');
+const pwaInstallHelpDismiss = document.getElementById('pwaInstallHelpDismiss');
+const isIosDevice = /iPhone|iPad|iPod/.test(navigator.userAgent)
+  || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+const isInstalledPwa = window.matchMedia('(display-mode: standalone)').matches
+  || navigator.standalone === true;
+let deferredInstallPrompt = null;
+
+if (pwaInstallButton && !isInstalledPwa) {
+  if (isIosDevice) pwaInstallButton.hidden = false;
+
+  window.addEventListener('beforeinstallprompt', event => {
+    event.preventDefault();
+    deferredInstallPrompt = event;
+    pwaInstallButton.hidden = false;
+  });
+
+  pwaInstallButton.addEventListener('click', async () => {
+    if (isIosDevice) {
+      pwaInstallHelp.hidden = false;
+      pwaInstallHelp.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      return;
+    }
+
+    if (!deferredInstallPrompt) return;
+    const installPrompt = deferredInstallPrompt;
+    deferredInstallPrompt = null;
+    pwaInstallButton.hidden = true;
+    try {
+      await installPrompt.prompt();
+      await installPrompt.userChoice;
+    } catch (error) {
+      console.warn('Chronos installation prompt could not be completed.', error);
+    }
+  });
+
+  pwaInstallHelpDismiss?.addEventListener('click', () => {
+    pwaInstallHelp.hidden = true;
+  });
+
+  window.addEventListener('appinstalled', () => {
+    pwaInstallButton.hidden = true;
+    pwaInstallHelp.hidden = true;
+  });
+}
+
 const menuToggle = document.getElementById('menuToggle');
 const nav = document.getElementById('nav');
 if (menuToggle && nav) {
