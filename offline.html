@@ -1,23 +1,51 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#070914">
-  <title>Offline — Chronos AI</title>
-  <style>
-    body{min-height:100vh;margin:0;display:grid;place-items:center;padding:24px;box-sizing:border-box;background:#070914;color:#f5f7ff;font:16px/1.7 system-ui,sans-serif}
-    main{max-width:520px;padding:32px;border:1px solid rgba(154,177,255,.2);border-radius:16px;background:#0d1223}
-    h1{margin-top:0;font-size:28px}
-    p{color:#a4aec7}
-    a{color:#8edfff}
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#FAF7F2">
+<meta name="description" content="You are offline. The Chronos AI interface is available from cache, but a response still requires a local or remote model.">
+<title>Offline — Chronos AI</title>
+<style>
+  :root{color-scheme:light}
+  *{box-sizing:border-box}
+  body{
+    min-height:100vh;margin:0;display:grid;place-items:center;padding:32px;
+    background:#FAF7F2;color:#1F1E1D;
+    font:16px/1.65 "Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  main{max-width:520px;width:100%}
+  .eyebrow{
+    display:block;font-size:11px;font-weight:600;letter-spacing:.16em;
+    text-transform:uppercase;color:#B4562F;margin-bottom:16px;
+  }
+  h1{
+    margin:0 0 24px;font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    font-weight:400;font-size:clamp(2rem,5vw,2.6rem);letter-spacing:-.028em;line-height:1.14;
+  }
+  p{margin:0 0 16px;color:#4A4744}
+  p:last-of-type{margin-bottom:32px}
+  .rule{height:1px;background:rgba(31,30,29,.12);border:0;margin:0 0 32px}
+  a.btn{
+    display:inline-flex;align-items:center;gap:10px;padding:13px 26px;
+    border:1px solid #1F1E1D;background:#1F1E1D;color:#FAF7F2;
+    font-size:15px;font-weight:500;text-decoration:none;border-radius:2px;
+    transition:background .3s ease,border-color .3s ease;
+  }
+  a.btn:hover{background:#B4562F;border-color:#B4562F}
+  .quiet{font-size:14px;color:#6B665F}
+</style>
 </head>
 <body>
   <main>
-    <h1>You're offline</h1>
-    <p>The Chronos AI website shell is available, but online AI services and account features need an internet connection.</p>
-    <p><a href="./">Try Chronos AI again</a></p>
+    <span class="eyebrow">Offline</span>
+    <h1>You are offline.</h1>
+    <hr class="rule">
+    <p>The interface is available from cache, but a response still needs a model. A local model keeps working without a network; an online provider does not.</p>
+    <p>Reconnect and reload, or open Chronos in a browser where a local model is available.</p>
+    <p><a class="btn" href="./">Reload Chronos AI</a></p>
+    <p class="quiet">Free to use · No account required · No cost</p>
   </main>
 </body>
 </html>

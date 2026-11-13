@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#FAF7F2">
+<meta name="description" content="What Chronos AI does: long-form conversation, local model support, privacy by default, and document and media understanding in progress.">
+<title>Features — Chronos AI</title>
+<link rel="icon" type="image/png" href="assets/chronos-web-logo.png">
+<link rel="apple-touch-icon" sizes="180x180" href="assets/pwa/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="index.html" aria-label="Chronos AI — home">
+      <span class="brand-mark"><img src="assets/chronos-web-logo.png" alt=""></span>
+      <span class="brand-name">Chronos <span>AI</span></span>
+    </a>
+    <button class="menu-toggle" id="menuToggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="nav">
+      <span></span>
+    </button>
+    <nav class="nav" id="nav" aria-label="Primary">
+      <a href="index.html">Home</a>
+      <a href="features.html" aria-current="page">Features</a>
+      <a href="about.html">About</a>
+      <a href="faq.html">FAQ</a>
+      <a href="download.html">Download</a>
+      <a href="contact.html">Contact</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+
+  <section class="section" style="padding-bottom:var(--s8)">
+    <div class="wrap">
+      <span class="eyebrow">Features</span>
+      <h1 style="max-width:22ch">What the assistant actually does.</h1>
+      <p class="lede" style="margin-top:var(--s5);max-width:56ch">Each capability below is described at the level it is available today. Where something is still being built, it says so rather than implying otherwise.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section class="section">
+    <div class="wrap">
+      <div class="features">
+
+        <h2 class="sr-only">Capabilities in detail</h2>
+
+        <article class="feature">
+          <span class="feature-index">01</span>
+          <div>
+            <h3>Long-form conversation</h3>
+            <p class="lede">Context is carried across a conversation rather than reset every turn.</p>
+            <p>Ask a follow-up that depends on something said twenty messages ago and it still holds. Useful for revising a draft, working a problem from several angles, or thinking aloud without re-explaining the premise each time.</p>
+            <p>Conversations can be kept, named, and returned to. Nothing is discarded because a session ended.</p>
+          </div>
+        </article>
+
+        <article class="feature">
+          <span class="feature-index">02</span>
+          <div>
+            <h3>Local models</h3>
+            <p class="lede">Requests handled on your own hardware, when your hardware can do it.</p>
+            <p>Chronos can run a compatible model locally, which means the conversation stays on your machine and does not leave it. Whether that is possible is a property of your processor, memory, and the model files you have installed — not of your plan.</p>
+            <p>If a local model is not viable, the assistant says so plainly instead of quietly falling back to something remote.</p>
+          </div>
+        </article>
+
+        <article class="feature">
+          <span class="feature-index">03</span>
+          <div>
+            <h3>Privacy and control</h3>
+            <p class="lede">No account, no profile, no telemetry attached to a name.</p>
+            <p>There is nothing to sign in to, so there is no identity to track. Conversation data stays where you put it. When an online provider is used, the request is disclosed before it is sent, so the decision is explicit rather than a side effect of using the app.</p>
+          </div>
+        </article>
+
+        <article class="feature">
+          <span class="feature-index">04</span>
+          <div>
+            <h3>Writing and editing</h3>
+            <p class="lede">Drafting, tightening, restructuring, and arguing with your own text.</p>
+            <p>The assistant is set up for the unglamorous parts of writing: a paragraph that isn't landing, a structure that has drifted, a section that needs to be half its length. It will push back on a weak argument rather than agree with it.</p>
+          </div>
+        </article>
+
+        <article class="feature">
+          <span class="feature-index">05</span>
+          <div>
+            <h3>Reading and analysis</h3>
+            <p class="lede">Working through material that is longer than a prompt.</p>
+            <p>Longer documents and detailed questions are handled with the relevant part of the material in view, rather than summarised from memory. The assistant distinguishes what is in the text from what it is inferring.</p>
+          </div>
+        </article>
+
+        <article class="feature">
+          <span class="feature-index">06</span>
+          <div>
+            <h3>Planning and decisions</h3>
+            <p class="lede">Thinking a decision through before committing to it.</p>
+            <p>Useful when the choice has several reasonable options and the trade-offs matter. The assistant will lay out what is actually at stake, including the parts of the decision that are not technical.</p>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section class="section">
+    <div class="wrap">
+      <div class="split">
+        <div class="split-aside">
+          <span class="eyebrow">In progress</span>
+          <h2>What is not finished.</h2>
+        </div>
+        <div>
+          <p class="lede">These are being worked on. They are listed here so the boundary is visible rather than blurred.</p>
+          <dl class="specs" style="margin-top:var(--s6)">
+            <div>
+              <dt>Document understanding</dt>
+              <dd>Reading long files and answering against them. Under development; not yet in a released build.</dd>
+            </div>
+            <div>
+              <dt>Image interpretation</dt>
+              <dd>Interpreting images and screenshots as input. Under development.</dd>
+            </div>
+            <div>
+              <dt>Native desktop builds</dt>
+              <dd>Packaged installers for Windows, macOS, and Linux. Not published; the browser version is what exists today.</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <section class="section-tight">
+    <div class="wrap">
+      <p style="margin-bottom:var(--s5)"><a class="btn" href="download.html">Explore Chronos</a></p>
+      <p class="quiet" style="font-size:15px">Free to use. No account, no subscription, no paid tier.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-top">
+      <div class="footer-about">
+        <a class="brand" href="index.html">
+          <span class="brand-mark"><img src="assets/chronos-web-logo.png" alt=""></span>
+          <span class="brand-name">Chronos <span>AI</span></span>
+        </a>
+        <p>An independent AI assistant. Free to use, with no account and no paid tier.</p>
+      </div>
+      <div class="footer-col">
+        <h2>Product</h2>
+        <ul>
+          <li><a href="features.html">Features</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="download.html">Download</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h2>More</h2>
+        <ul>
+          <li><a href="faq.html">FAQ</a></li>
+          <li><a href="contact.html">Contact</a></li>
+          <li><a href="index.html">Back to top ↑</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© <span id="year">2026</span> Chronos AI</span>
+      <span>Independent project · Free forever · No account required</span>
+    </div>
+  </div>
+</footer>
+
+<script src="script.js"></script>
+</body>
+</html>

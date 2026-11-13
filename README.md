@@ -1,61 +1,46 @@
 # Chronos AI Website
 
-A responsive static website for Chronos AI, hosted on GitHub Pages. It preserves
-the existing plain HTML/CSS/JavaScript frontend and uses Supabase Edge Functions
-for authentication, one-time lifetime checkout, payment verification, and
-entitlements.
+A professional static website for Chronos AI, hosted on GitHub Pages. The website showcases an independent AI assistant project focused on thoughtful conversations, local model support, and creative work.
 
-## Files
+## Features
 
-- `index.html` — existing site, editions, market pricing, and account section
-- `styles.css` — branded responsive styling
-- `script.js` — navigation and Supabase account/purchase UX
-- `config.js` — public Supabase URL and anon-key placeholders (never secrets)
-- `supabase/migrations/` — database schema, RLS, and disabled supplied prices
-- `supabase/functions/` — secure checkout, verification, webhook, entitlement,
-  and restoration endpoints
-- `PAYMENTS_SETUP.md` — setup, deployment, testing, currency configuration, and
-  Flutter Windows API instructions
+- **AI Assistant**: Chat-based interface for exploring ideas, solving problems, and working through thoughts
+- **Local Models**: Designed to support compatible local models on supported hardware for self-hosting
+- **Professional Design**: Clean, modern interface built for focus and clarity
+- **No Cost**: Chronos AI remains free forever — no subscriptions, no sign-ups, nothing for sale
+
+## Site Structure
+
+- `index.html` — Landing page
+- `features.html` — Capabilities
+- `about.html` — Project intent and status
+- `faq.html` — Common questions
+- `download.html` — Getting started and platform status
+- `contact.html` — How to reach the project
+- `offline.html` — Offline fallback for the installed app
+- `styles.css` — Design system and layout
+- `script.js` — Navigation and PWA install behaviour
+- `service-worker.js` — Offline shell caching
+- `manifest.webmanifest` — Web app manifest
+- `config.js` — Public Supabase project settings (publishable values only)
 
 ## Run locally
 
-Configure the public Supabase values in `config.js` after creating a project.
-Serve the repository over HTTP(S); account auth, callback handling, and Edge
-Function requests do not work from a `file://` URL. For example:
+Serve the repository over HTTP(S):
 
 ```bash
 python -m http.server 8000
 ```
 
-Then visit `http://localhost:8000`. Configure that local redirect URL in
-Supabase Auth if testing sign-in.
+Then visit `http://localhost:8000`.
 
-## Payments
+## About Chronos AI
 
-Plus and Ultimate are lifetime one-time purchases, not subscriptions. The
-provided Ultimate prices are seeded with checkout disabled, all currencies
-remain unavailable until verified for the Paystack merchant, and no Plus price
-is invented. Do not enable production checkout until external Supabase and
-Paystack configuration is complete.
+Chronos AI is an independent project — an AI assistant built for thoughtful conversations, creative work, and problem-solving. Designed with privacy and user control in mind, you can run compatible local models on supported hardware for your own AI assistant.
 
-Follow [PAYMENTS_SETUP.md](./PAYMENTS_SETUP.md) for credentials, schema/RLS,
-Edge Function deployment, webhook setup, safe testing, live-mode activation,
-and Flutter integration. No secret keys belong in this static website.
+The project remains completely free forever. Nothing here is sold or monetized.
 
-## Publish on GitHub Pages
-
-In repository **Settings → Pages**, choose deployment from the `main` branch
-and repository root, then publish the static website files. Deploy the Supabase
-migration and Edge Functions separately by following the setup guide. Do not
-push credentials or an unreviewed live configuration to GitHub.
-
-## Windows installer
-
-The Windows download button remains disabled until a real tested installer is
-published. Replace its placeholder URL only after a release is available, and
-update supported-platform requirements based on the actual build.
-
-## Notes
+## Design Notes
 
 - Google Fonts is an optional online dependency; local fallback fonts remain.
 - Keep large model files out of this website repository.

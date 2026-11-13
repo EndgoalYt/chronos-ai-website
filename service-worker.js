@@ -1,9 +1,17 @@
 const CACHE_PREFIX = 'chronos-ai-shell-';
-const CACHE_NAME = `${CACHE_PREFIX}v1`;
-const APP_SHELL = [
+const CACHE_NAME = `${CACHE_PREFIX}v2`;
+const APP_PAGES = [
   './',
   './index.html',
+  './features.html',
+  './about.html',
+  './faq.html',
+  './download.html',
+  './contact.html',
   './offline.html',
+];
+const APP_SHELL = [
+  ...APP_PAGES,
   './styles.css',
   './script.js',
   './manifest.webmanifest',
@@ -69,8 +77,7 @@ async function networkFirstNavigation(request, scopeUrl) {
   }
 
   const requestUrl = new URL(request.url);
-  const isAppPage = requestUrl.pathname === scopeUrl.pathname
-    || requestUrl.pathname === new URL('./index.html', scopeUrl).pathname;
+  const isAppPage = APP_PAGES.some(page => new URL(page, scopeUrl).pathname === requestUrl.pathname);
   if (response.ok && response.type === 'basic' && isAppPage && !requestUrl.search) {
     const cache = await caches.open(CACHE_NAME);
     try {
