@@ -1,6 +1,54 @@
 (function () {
   'use strict';
 
+  /* ---------- theme ---------- */
+
+  var THEME_KEY = 'chronos-ai-theme';
+  var THEME_COLORS = { dark: '#101318', light: '#FAF7F2' };
+  var root = document.documentElement;
+  var themeToggle = document.getElementById('themeToggle');
+  var themeColorMeta = document.querySelector('meta[name="theme-color"]');
+
+  function currentTheme() {
+    return root.getAttribute('data-theme') === 'light' ? 'light' : 'dark';
+  }
+
+  function paintTheme(theme, persist) {
+    var next = theme === 'light' ? 'light' : 'dark';
+
+    root.setAttribute('data-theme', next);
+
+    if (themeColorMeta) {
+      themeColorMeta.setAttribute('content', THEME_COLORS[next]);
+    }
+
+    if (themeToggle) {
+      var toLight = next === 'dark';
+      var action = toLight ? 'Switch to light mode' : 'Switch to dark mode';
+      themeToggle.setAttribute('aria-pressed', toLight ? 'true' : 'false');
+      themeToggle.setAttribute('title', action);
+      themeToggle.setAttribute('aria-label', 'Dark mode');
+      themeToggle.setAttribute('data-action', action);
+    }
+
+    if (persist) {
+      try {
+        localStorage.setItem(THEME_KEY, next);
+      } catch (error) {
+        /* storage unavailable: the theme still applies for this page view */
+      }
+    }
+  }
+
+  /* the inline head script has already resolved the theme; sync the control to it */
+  paintTheme(currentTheme(), false);
+
+  if (themeToggle) {
+    themeToggle.addEventListener('click', function () {
+      paintTheme(currentTheme() === 'dark' ? 'light' : 'dark', true);
+    });
+  }
+
   /* ---------- offline shell ---------- */
 
   if ('serviceWorker' in navigator) {

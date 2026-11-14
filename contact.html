@@ -1,9 +1,10 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#FAF7F2">
+<meta name="theme-color" content="#101318">
+<script>(function(){try{var t=localStorage.getItem('chronos-ai-theme');document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark');}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();</script>
 <meta name="description" content="How to reach the Chronos AI project: email chronosai.team@gmail.com, raise an issue on the public repository, or raise it in the conversation itself.">
 <title>Contact — Chronos AI</title>
 <link rel="icon" type="image/png" href="assets/chronos-web-logo.png">
@@ -21,9 +22,6 @@
       <span class="brand-mark"><img src="assets/chronos-web-logo.png" alt=""></span>
       <span class="brand-name">Chronos <span>AI</span></span>
     </a>
-    <button class="menu-toggle" id="menuToggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="nav">
-      <span></span>
-    </button>
     <nav class="nav" id="nav" aria-label="Primary">
       <a href="index.html">Home</a>
       <a href="features.html">Features</a>
@@ -32,6 +30,22 @@
       <a href="download.html">Download</a>
       <a href="contact.html" aria-current="page">Contact</a>
     </nav>
+    <div class="header-actions">
+      <button class="theme-toggle" id="themeToggle" type="button" aria-label="Dark mode" aria-pressed="true" title="Switch to light mode">
+        <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+          <circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+          <g stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+            <path d="M12 2.4v2.3M12 19.3v2.3M2.4 12h2.3M19.3 12h2.3M5.1 5.1l1.7 1.7M17.2 17.2l1.7 1.7M18.9 5.1l-1.7 1.7M6.8 17.2l-1.7 1.7"/>
+          </g>
+        </svg>
+        <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+          <path d="M20.4 14.7A8.6 8.6 0 1 1 9.3 3.6a7 7 0 0 0 11.1 11.1z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <button class="menu-toggle" id="menuToggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="nav">
+        <span></span>
+      </button>
+    </div>
   </div>
 </header>
 

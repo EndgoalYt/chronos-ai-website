@@ -1,51 +1,124 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#FAF7F2">
+<meta name="theme-color" content="#101318">
+<script>(function(){try{var t=localStorage.getItem('chronos-ai-theme');document.documentElement.setAttribute('data-theme',t==='light'?'light':'dark');}catch(e){document.documentElement.setAttribute('data-theme','dark');}})();</script>
 <meta name="description" content="You are offline. The Chronos AI interface is available from cache, but a response still requires a local or remote model.">
 <title>Offline — Chronos AI</title>
+<link rel="icon" type="image/png" href="assets/chronos-web-logo.png">
 <style>
-  :root{color-scheme:light}
+  :root{
+    --paper:#FAF7F2; --paper-2:#F3EEE6;
+    --ink:#1F1E1D; --ink-2:#4A4744; --ink-3:#6B665F;
+    --line:rgba(31,30,29,.12); --line-2:rgba(31,30,29,.22);
+    --accent:#B4562F;
+    --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    --sans:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    color-scheme:light;
+  }
+  [data-theme="dark"]{
+    --paper:#101318; --paper-2:#181E27;
+    --ink:#F4F5F7; --ink-2:#AAB4C2; --ink-3:#8D97A6;
+    --line:rgba(255,255,255,.10); --line-2:rgba(255,255,255,.18);
+    --accent:#E28A5C;
+    color-scheme:dark;
+  }
+
   *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
   body{
-    min-height:100vh;margin:0;display:grid;place-items:center;padding:32px;
-    background:#FAF7F2;color:#1F1E1D;
-    font:16px/1.65 "Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    min-height:100vh;margin:0;display:flex;flex-direction:column;
+    background:var(--paper);color:var(--ink);
+    font:16.5px/1.65 var(--sans);
     -webkit-font-smoothing:antialiased;
   }
-  main{max-width:520px;width:100%}
+
+  .bar{
+    border-bottom:1px solid var(--line);
+    padding:0 20px;height:60px;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+  }
+  .brand{display:inline-flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink)}
+  .brand-mark{width:24px;height:24px;border-radius:2px;overflow:hidden;background:var(--ink);flex:0 0 auto}
+  .brand-mark img{width:100%;height:100%;object-fit:cover}
+  .brand-name{font-family:var(--serif);font-size:1.02rem;letter-spacing:-.01em}
+  .brand-name span{color:var(--accent);font-style:italic}
+
+  .theme-toggle{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:44px;height:44px;padding:0;flex:0 0 auto;
+    background:none;border:1px solid var(--line-2);border-radius:2px;
+    color:var(--ink-2);cursor:pointer;
+    transition:border-color .25s ease,background .25s ease,color .25s ease;
+  }
+  .theme-toggle:hover{border-color:var(--ink-3);background:var(--paper-2);color:var(--ink)}
+  .theme-toggle .theme-icon{display:none;width:20px;height:20px}
+  .theme-toggle .theme-icon-sun{display:block}
+  [data-theme="light"] .theme-toggle .theme-icon-sun{display:none}
+  [data-theme="light"] .theme-toggle .theme-icon-moon{display:block}
+
+  main{flex:1 0 auto;display:grid;place-items:center;padding:40px 24px}
+  .panel{max-width:520px;width:100%}
   .eyebrow{
     display:block;font-size:11px;font-weight:600;letter-spacing:.16em;
-    text-transform:uppercase;color:#B4562F;margin-bottom:16px;
+    text-transform:uppercase;color:var(--accent);margin-bottom:16px;
   }
   h1{
-    margin:0 0 24px;font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
-    font-weight:400;font-size:clamp(2rem,5vw,2.6rem);letter-spacing:-.028em;line-height:1.14;
+    margin:0 0 24px;font-family:var(--serif);font-weight:400;
+    font-size:clamp(2rem,5vw,2.6rem);letter-spacing:-.028em;line-height:1.14;
   }
-  p{margin:0 0 16px;color:#4A4744}
-  p:last-of-type{margin-bottom:32px}
-  .rule{height:1px;background:rgba(31,30,29,.12);border:0;margin:0 0 32px}
-  a.btn{
+  p{margin:0 0 16px;color:var(--ink-2)}
+  .rule{height:1px;background:var(--line);border:0;margin:0 0 28px}
+  .btn{
     display:inline-flex;align-items:center;gap:10px;padding:13px 26px;
-    border:1px solid #1F1E1D;background:#1F1E1D;color:#FAF7F2;
+    border:1px solid var(--ink);background:var(--ink);color:var(--paper);
     font-size:15px;font-weight:500;text-decoration:none;border-radius:2px;
     transition:background .3s ease,border-color .3s ease;
   }
-  a.btn:hover{background:#B4562F;border-color:#B4562F}
-  .quiet{font-size:14px;color:#6B665F}
+  .btn:hover{background:var(--accent);border-color:var(--accent);color:var(--paper)}
+  .quiet{font-size:14px;color:var(--ink-3)}
+  .foot{padding:0 24px 28px;color:var(--ink-3);font-size:13px}
+  @media (prefers-reduced-motion:reduce){
+    *,*::before,*::after{transition-duration:.01ms!important}
+  }
 </style>
 </head>
 <body>
-  <main>
+
+<header class="bar">
+  <a class="brand" href="./index.html">
+    <span class="brand-mark"><img src="assets/chronos-web-logo.png" alt=""></span>
+    <span class="brand-name">Chronos <span>AI</span></span>
+  </a>
+  <button class="theme-toggle" id="themeToggle" type="button" aria-label="Dark mode" aria-pressed="true" title="Switch to light mode">
+    <svg class="theme-icon theme-icon-sun" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+      <circle cx="12" cy="12" r="4.2" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <g stroke="currentColor" stroke-width="1.6" stroke-linecap="round">
+        <path d="M12 2.4v2.3M12 19.3v2.3M2.4 12h2.3M19.3 12h2.3M5.1 5.1l1.7 1.7M17.2 17.2l1.7 1.7M18.9 5.1l-1.7 1.7M6.8 17.2l-1.7 1.7"/>
+      </g>
+    </svg>
+    <svg class="theme-icon theme-icon-moon" viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" focusable="false">
+      <path d="M20.4 14.7A8.6 8.6 0 1 1 9.3 3.6a7 7 0 0 0 11.1 11.1z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+    </svg>
+  </button>
+</header>
+
+<main>
+  <div class="panel">
     <span class="eyebrow">Offline</span>
     <h1>You are offline.</h1>
     <hr class="rule">
     <p>The interface is available from cache, but a response still needs a model. A local model keeps working without a network; an online provider does not.</p>
     <p>Reconnect and reload, or open Chronos in a browser where a local model is available.</p>
-    <p><a class="btn" href="./">Reload Chronos AI</a></p>
+    <p><a class="btn" href="./index.html">Reload Chronos AI</a></p>
     <p class="quiet">Free to use · No account required · No cost</p>
-  </main>
+  </div>
+</main>
+
+<p class="foot">Your theme choice is remembered on this device.</p>
+
+<script src="script.js"></script>
 </body>
 </html>
